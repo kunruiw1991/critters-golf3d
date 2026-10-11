@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>⛳🎡🏆🌈</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="webgl-container"></div>
+
+  <!-- 100% Zero-Text Visual HUD Cockpit -->
+  <div id="hud-layer" class="hidden">
+    <!-- Top Bar: Home, Stage Icon, Live Rank Medal, 5-Critter Race Track, Rainbow Fever Meter, Audio -->
+    <div id="hud-top">
+      <button id="btn-home" class="icon-btn">🏠</button>
+      <div id="stage-badge" class="badge-pill">
+        <span id="hud-stage-icon">🎡</span>
+        <span id="hud-stage-dots" class="stage-dots"></span>
+      </div>
+      <div id="hud-rank-badge" class="rank-pill qualified-rank">🥇</div>
+      <!-- 5-Critter Live Hole Race Progress Bar -->
+      <div id="race-track-bar">
+        <div class="track-line"></div>
+        <div class="track-start-icon">⛳</div>
+        <div class="track-hole-icon">🕳️🚩</div>
+        <div id="race-pins-container"></div>
+      </div>
+      <!-- Rainbow Fever Gauge -->
+      <div id="rainbow-gauge-wrap">
+        <span id="rainbow-gauge-emoji" class="gauge-emoji">🌈</span>
+        <div class="gauge-bar-bg">
+          <div id="rainbow-gauge-fill"></div>
+        </div>
+      </div>
+      <button id="btn-audio" class="icon-btn">🔊</button>
+    </div>
+
+    <!-- Center Floating Visual Callouts (Emoji-only bursts) -->
+    <div id="visual-callout" class="hidden"></div>
+
+    <!-- Interactive Aiming & Power Visual Control Pill (Touch Steer + Tap-to-Putt) -->
+    <div id="aim-hint-pill">
+      <button id="btn-aim-left" class="aim-nudge-btn" type="button">⬅️</button>
+      <span id="aim-dir-arrow" class="aim-icon">⬆️</span>
+      <div id="aim-tap-zone" class="aim-power-meter">
+        <div id="aim-power-fill"></div>
+      </div>
+      <span class="aim-icon">🎯</span>
+      <button id="btn-aim-right" class="aim-nudge-btn" type="button">➡️</button>
+    </div>
+
+    <!-- Bottom Cockpit: Quick Putt Launch Pedal + 3 Giant Power Pedals -->
+    <div id="hud-bottom">
+      <button id="pedal-putt" class="power-pedal pedal-green is-ready" data-power="putt" type="button">
+        <span class="pedal-emoji">🏌️</span>
+        <span class="pedal-sub">⛳🎯</span>
+        <div class="pedal-cooldown"></div>
+        <span class="key-badge">⛳</span>
+      </button>
+
+      <button id="pedal-vortex" class="power-pedal pedal-cyan is-ready" data-power="vortex" type="button">
+        <span class="pedal-emoji">🌪️</span>
+        <span class="pedal-sub">🧲🕳️</span>
+        <div class="pedal-cooldown"></div>
+        <span class="key-badge">•</span>
+      </button>
+
+      <button id="pedal-rocket" class="power-pedal pedal-gold is-ready" data-power="rocket" type="button">
+        <span class="pedal-emoji">⚡</span>
+        <span class="pedal-sub">🚀⛳</span>
+        <div class="pedal-cooldown"></div>
+        <span class="key-badge">••</span>
+      </button>
+
+      <button id="pedal-bump" class="power-pedal pedal-pink is-ready" data-power="bump" type="button">
+        <span class="pedal-emoji">💥</span>
+        <span class="pedal-sub">🌊🎱</span>
+        <div class="pedal-cooldown"></div>
+        <span class="key-badge">•••</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Title / Character & Stage Selector Screen (Zero-Text Visual Menu) -->
+  <div id="menu-screen" class="overlay-screen">
+    <div class="menu-card">
+      <div class="logo-banner">
+        <span class="bounce-icon">⛳</span>
+        <span class="bounce-icon delay-1">🎡</span>
+        <span class="bounce-icon delay-2">🏆</span>
+        <span class="bounce-icon delay-3">🌈</span>
+      </div>
+
+      <!-- 8 Smiling Critters Selector Grid -->
+      <div class="section-icon-header">🐾 🏌️ ✨</div>
+      <div id="critter-grid" class="critter-grid"></div>
+
+      <!-- 8 Mini-Golf Courses Selector Grid -->
+      <div class="section-icon-header">🗺️ ⛳ 🌟</div>
+      <div id="stage-grid" class="stage-grid"></div>
+
+      <!-- Giant Play Button -->
+      <button id="btn-play" class="giant-play-btn">
+        <span>▶️</span>
+        <span>⛳</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Podium / Result Modal (Top-3 Qualification vs 4th/5th Defeat) -->
+  <div id="result-screen" class="overlay-screen hidden">
+    <div class="result-card">
+      <div id="result-header-emojis" class="result-banner">🏆 🌟 🎉</div>
+      <div id="result-stars-row" class="stars-row"></div>
+
+      <!-- 5-Critter Podium Standings -->
+      <div id="podium-standings" class="podium-standings"></div>
+
+      <!-- Action Buttons: Retry Always, Next Only if Qualified (Rank 1-3) -->
+      <div class="result-actions">
+        <button id="btn-result-home" class="action-circle-btn btn-blue">🏠</button>
+        <button id="btn-retry" class="action-circle-btn btn-orange">🔄</button>
+        <button id="btn-next" class="action-circle-btn btn-green">⏭️</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

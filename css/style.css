@@ -1,0 +1,1140 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 25%, #7de2ff 0%, #3aa8ff 55%, #1d63b8 100%);
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  touch-action: none;
+}
+
+#webgl-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+#webgl-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* HUD Layer */
+#hud-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 14px 14px;
+}
+
+#hud-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.92);
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  padding: 5px 12px;
+  box-shadow: 0 8px 24px rgba(0, 40, 90, 0.28);
+  max-width: 100%;
+}
+
+.icon-btn {
+  width: 46px;
+  height: 46px;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: linear-gradient(135deg, #ff9a3c, #ff5277);
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
+}
+
+.badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #ffe066, #ffaa00);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  font-size: 22px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.stage-dots {
+  display: flex;
+  gap: 2px;
+  font-size: 12px;
+}
+
+/* Live HUD Rank Medallion Pill */
+.rank-pill {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s ease;
+}
+
+.rank-pill.qualified-rank {
+  background: linear-gradient(135deg, #fef08a, #22c55e);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.55);
+}
+
+.rank-pill.danger-rank {
+  background: linear-gradient(135deg, #fecaca, #ef4444);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+}
+
+.rank-pill.rank-pop {
+  transform: scale(1.32);
+}
+
+/* 5-Critter Live Hole Progress Bar */
+#race-track-bar {
+  position: relative;
+  flex: 1;
+  min-width: 84px;
+  height: 38px;
+  background: linear-gradient(90deg, #52d681 0%, #38b262 100%);
+  border-radius: 999px;
+  border: 3px solid #ffffff;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  overflow: visible;
+}
+
+.track-line {
+  position: absolute;
+  left: 32px;
+  right: 40px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 3px;
+}
+
+.track-start-icon {
+  position: absolute;
+  left: 6px;
+  font-size: 18px;
+  z-index: 2;
+}
+
+.track-hole-icon {
+  position: absolute;
+  right: 6px;
+  font-size: 18px;
+  z-index: 2;
+}
+
+#race-pins-container {
+  position: absolute;
+  left: 32px;
+  right: 42px;
+  top: 0;
+  bottom: 0;
+}
+
+.race-pin {
+  position: absolute;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transform: translate(-50%, -50%);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+  transition: left 0.12s linear;
+  z-index: 3;
+}
+
+.race-pin.player-pin {
+  width: 38px;
+  height: 38px;
+  border-color: #ffe600;
+  box-shadow: 0 0 10px #ffe600, 0 4px 10px rgba(0,0,0,0.4);
+  z-index: 5;
+}
+
+/* Rainbow Gauge & Active Fever State */
+#rainbow-gauge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#rainbow-gauge-wrap.active-fever {
+  border-color: #facc15;
+  background: linear-gradient(90deg, #fef08a, #fbcfe8, #bae6fd);
+  box-shadow: 0 0 18px #facc15, 0 0 28px #f472b6;
+  animation: feverPulse 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes feverPulse {
+  0% { transform: scale(1.0); }
+  100% { transform: scale(1.09); }
+}
+
+.gauge-emoji {
+  font-size: 20px;
+}
+
+.gauge-bar-bg {
+  width: 68px;
+  height: 15px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid #cbd5e1;
+}
+
+#rainbow-gauge-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff3b3b, #ff9f1c, #ffe600, #2ec4b6, #7209b7, #f72585);
+  background-size: 200% 100%;
+  animation: rainbowShift 1.5s linear infinite;
+  transition: width 0.15s ease;
+}
+
+@keyframes rainbowShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Visual Callout */
+#visual-callout {
+  align-self: center;
+  font-size: 58px;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
+  animation: popCallout 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popCallout {
+  0% { transform: scale(0.2); opacity: 0; }
+  60% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Interactive Aim & Charge Pill */
+#aim-hint-pill {
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+#aim-hint-pill.dragging {
+  border-color: #facc15;
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.8), 0 8px 22px rgba(0,0,0,0.3);
+  transform: scale(1.06);
+}
+
+.aim-nudge-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.aim-nudge-btn:active {
+  transform: scale(0.88);
+  background: #fde047;
+}
+
+.aim-icon {
+  font-size: 22px;
+  display: inline-block;
+  transition: transform 0.08s linear;
+}
+
+.aim-power-meter {
+  width: 110px;
+  height: 16px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid #94a3b8;
+}
+
+#aim-power-fill {
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+  transition: width 0.08s linear;
+}
+
+/* Bottom Power Pedals (Quick Putt + 3 Power Pedals) */
+#hud-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  pointer-events: auto;
+}
+
+.power-pedal {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  border-radius: 26px;
+  border: 4px solid #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32), inset 0 4px 8px rgba(255, 255, 255, 0.55);
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  overflow: hidden;
+}
+
+.power-pedal.is-ready {
+  border-color: #ffffff;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.65), 0 10px 24px rgba(0, 0, 0, 0.32), inset 0 4px 8px rgba(255, 255, 255, 0.6);
+}
+
+.power-pedal.is-active-power {
+  border-color: #fde047;
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.95), 0 0 36px rgba(56, 189, 248, 0.75), inset 0 4px 10px rgba(255, 255, 255, 0.85);
+  animation: activePedalPulse 0.42s infinite alternate ease-in-out;
+  filter: saturate(1.25) brightness(1.08);
+}
+
+@keyframes activePedalPulse {
+  0% { transform: translateY(-2px) scale(1.03); }
+  100% { transform: translateY(-6px) scale(1.09); }
+}
+
+.power-pedal.on-cooldown {
+  filter: saturate(0.45) brightness(0.82);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.power-pedal.cooldown-shake {
+  animation: pedalDeniedShake 0.28s ease;
+}
+
+@keyframes pedalDeniedShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px) rotate(-4deg); }
+  75% { transform: translateX(6px) rotate(4deg); }
+}
+
+.power-pedal:hover {
+  transform: translateY(-4px) scale(1.04);
+}
+
+.power-pedal:active {
+  transform: translateY(2px) scale(0.94);
+}
+
+.pedal-green { background: linear-gradient(145deg, #4ade80, #16a34a); }
+.pedal-cyan { background: linear-gradient(145deg, #38bdf8, #0284c7); }
+.pedal-gold { background: linear-gradient(145deg, #facc15, #ea580c); }
+.pedal-pink { background: linear-gradient(145deg, #f472b6, #db2777); }
+
+.pedal-emoji {
+  font-size: 32px;
+  line-height: 1;
+  z-index: 2;
+}
+
+.pedal-sub {
+  font-size: 15px;
+  margin-top: 2px;
+  z-index: 2;
+}
+
+.pedal-cooldown {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: rgba(15, 23, 42, 0.62);
+  z-index: 3;
+  transition: height 0.1s linear;
+}
+
+.key-badge {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(0,0,0,0.32);
+  border-radius: 8px;
+  padding: 2px 5px;
+  z-index: 4;
+}
+
+/* Overlay Screens */
+.overlay-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: linear-gradient(90deg, rgba(10, 32, 70, 0.42) 0%, rgba(10, 32, 70, 0.12) 60%, rgba(10, 32, 70, 0.05) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 22px;
+}
+
+#result-screen.overlay-screen {
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(10, 32, 70, 0.25), rgba(8, 25, 60, 0.55));
+}
+
+.menu-card {
+  width: min(500px, 56vw);
+  max-height: 95vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.94);
+  border: 5px solid #ffffff;
+  border-radius: 30px;
+  padding: 12px 16px;
+  box-shadow: 0 18px 45px rgba(0, 25, 75, 0.38);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-card {
+  width: min(680px, 94vw);
+  max-height: 94vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,249,255,0.95) 100%);
+  border: 6px solid #ffffff;
+  border-radius: 34px;
+  padding: 16px 20px;
+  box-shadow: 0 22px 55px rgba(0, 25, 75, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-banner {
+  display: flex;
+  gap: 12px;
+  font-size: 30px;
+  background: linear-gradient(135deg, #4ade80, #38bdf8, #a855f7);
+  padding: 5px 22px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 16px rgba(56, 189, 248, 0.35);
+}
+
+.bounce-icon {
+  display: inline-block;
+  animation: floatBounce 1.8s ease-in-out infinite;
+}
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px) scale(1.06); }
+}
+
+.section-icon-header {
+  font-size: 18px;
+  background: #e0f2fe;
+  padding: 2px 14px;
+  border-radius: 999px;
+}
+
+/* 8 Critters Grid */
+.critter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.critter-card {
+  position: relative;
+  background: #ffffff;
+  border: 4px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 5px 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.critter-card:hover, .critter-card:focus-visible {
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.critter-card.selected {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35), 0 6px 14px rgba(0,0,0,0.16);
+  transform: scale(1.03);
+}
+
+.critter-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+}
+
+.critter-badge-row {
+  font-size: 15px;
+  line-height: 1.1;
+}
+
+.critter-perk-pill {
+  font-size: 12px;
+  background: rgba(241, 245, 249, 0.95);
+  border-radius: 999px;
+  padding: 1px 6px;
+  border: 1px solid #cbd5e1;
+}
+
+/* 8 Stages Grid */
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.stage-card {
+  position: relative;
+  background: #ffffff;
+  border: 4px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 6px 4px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  transition: transform 0.14s ease, border-color 0.14s ease;
+}
+
+.stage-card:focus-visible {
+  outline: none;
+}
+
+.stage-card.selected {
+  box-shadow: 0 0 0 4px #10b981, 0 6px 14px rgba(0,0,0,0.2);
+  transform: scale(1.04);
+}
+
+.stage-card.locked {
+  opacity: 0.55;
+  filter: grayscale(0.75);
+  cursor: not-allowed;
+}
+
+.stage-emoji {
+  font-size: 22px;
+  line-height: 1.1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.stage-difficulty-pips {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.stage-stars {
+  font-size: 13px;
+  min-height: 16px;
+}
+
+.stage-turf-strip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+}
+
+/* 🆚 Live Matchup Preview Strip */
+.vs-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 3px 12px;
+  width: 100%;
+}
+
+.vs-mini-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.vs-mini-avatar.player {
+  width: 32px;
+  height: 32px;
+  border-color: #f59e0b;
+}
+
+.vs-badge-icon {
+  font-size: 16px;
+}
+
+/* Giant Play Button */
+.giant-play-btn {
+  position: sticky;
+  bottom: 0;
+  margin-top: 2px;
+  padding: 8px 38px;
+  border-radius: 999px;
+  border: 4px solid #ffffff;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  font-size: 30px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+  z-index: 5;
+}
+
+.giant-play-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.giant-play-btn:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.giant-play-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* Result Modal */
+.result-card.victory-card {
+  border-color: #fde047;
+  box-shadow: 0 0 28px rgba(250, 204, 21, 0.45), 0 18px 44px rgba(0, 0, 0, 0.38);
+}
+
+.result-card.defeat-card {
+  background: rgba(241, 245, 249, 0.96);
+  border-color: #f43f5e;
+  box-shadow: 0 0 24px rgba(244, 63, 94, 0.42), 0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+.result-banner {
+  font-size: 44px;
+}
+
+.result-card.defeat-card .result-banner {
+  animation: sadDroop 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes sadDroop {
+  0% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(4px) rotate(2deg); }
+}
+
+.stars-row {
+  font-size: 40px;
+  min-height: 48px;
+  display: flex;
+  gap: 10px;
+}
+
+.stars-row .empty-star {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.podium-standings {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 6px;
+}
+
+.podium-cutoff-divider {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  padding: 0 2px;
+  border-left: 3px dashed rgba(244, 63, 94, 0.55);
+  color: #f43f5e;
+}
+
+.podium-slot {
+  position: relative;
+  flex: 1;
+  max-width: 116px;
+  border-radius: 20px 20px 12px 12px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+}
+
+.podium-slot.rank-1 {
+  background: linear-gradient(180deg, #fef08a, #f59e0b);
+  min-height: 168px;
+}
+.podium-slot.rank-2 {
+  background: linear-gradient(180deg, #e2e8f0, #94a3b8);
+  min-height: 148px;
+}
+.podium-slot.rank-3 {
+  background: linear-gradient(180deg, #fed7aa, #d97706);
+  min-height: 132px;
+}
+.podium-slot.rank-4, .podium-slot.rank-5 {
+  background: linear-gradient(180deg, #f1f5f9, #cbd5e1);
+  min-height: 114px;
+  opacity: 0.82;
+  filter: grayscale(0.28);
+}
+
+.podium-slot.is-player {
+  outline: 4px solid #22c55e;
+  transform: translateY(-6px);
+}
+
+.podium-slot.is-player.is-player-defeat {
+  outline: 4px solid #f43f5e;
+  transform: translateY(-2px);
+  opacity: 0.96;
+  filter: none;
+}
+
+.podium-qual-badge {
+  font-size: 13px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.podium-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+.podium-medal {
+  font-size: 26px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 4px;
+}
+
+.action-circle-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  font-size: 32px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.action-circle-btn.cta-pulse {
+  animation: primaryCtaPulse 0.85s ease-in-out infinite alternate;
+  box-shadow: 0 0 22px rgba(74, 222, 128, 0.85), 0 8px 20px rgba(0,0,0,0.3);
+}
+
+@keyframes primaryCtaPulse {
+  0% { transform: scale(1.0); }
+  100% { transform: scale(1.14); }
+}
+
+.action-circle-btn:hover {
+  transform: scale(1.08);
+}
+
+.btn-blue { background: linear-gradient(135deg, #38bdf8, #2563eb); }
+.btn-orange { background: linear-gradient(135deg, #fb923c, #ea580c); }
+.btn-green { background: linear-gradient(135deg, #4ade80, #16a34a); }
+
+/* Responsive Narrow Portrait Phones (e.g. 390x844) - Keep >= 44px touch targets! */
+@media (max-width: 720px) {
+  .overlay-screen {
+    justify-content: center;
+    padding: 8px;
+  }
+  .menu-card {
+    width: 95vw;
+  }
+  .stage-dots {
+    display: none;
+  }
+  #hud-top {
+    gap: 5px;
+    padding: 4px 8px;
+  }
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 20px;
+  }
+  .rank-pill {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+  .badge-pill {
+    padding: 3px 7px;
+    font-size: 18px;
+  }
+  .gauge-bar-bg {
+    width: 44px;
+  }
+  #hud-bottom {
+    gap: 10px;
+  }
+  .power-pedal {
+    width: 72px;
+    height: 72px;
+  }
+  .pedal-emoji {
+    font-size: 26px;
+  }
+  .result-card {
+    width: 96vw;
+    padding: 12px 10px;
+    gap: 8px;
+  }
+  .podium-standings {
+    gap: 4px;
+    padding: 4px 2px;
+  }
+  .podium-slot {
+    padding: 6px 3px;
+    border-width: 3px;
+  }
+  .podium-avatar {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+  .podium-medal {
+    font-size: 20px;
+  }
+  .podium-qual-badge {
+    font-size: 11px;
+  }
+}
+
+/* Compact Height Screens (e.g. 1280x800, 1366x768) */
+@media (max-height: 820px) {
+  .menu-card {
+    padding: 8px 14px;
+    gap: 5px;
+  }
+  .logo-banner {
+    font-size: 24px;
+    padding: 3px 16px;
+  }
+  .section-icon-header {
+    font-size: 15px;
+    padding: 1px 10px;
+  }
+  .critter-avatar {
+    width: 42px;
+    height: 42px;
+  }
+  .critter-card {
+    padding: 3px;
+  }
+  .stage-card {
+    padding: 4px 3px 8px;
+  }
+  .stage-emoji {
+    font-size: 19px;
+  }
+  .giant-play-btn {
+    padding: 6px 32px;
+    font-size: 26px;
+  }
+}
+
+/* Short Landscape Phones (e.g. 844x390) - Zero-Scroll Menu, Result Modal & Unobstructed Fairway */
+@media (max-height: 500px) {
+  .overlay-screen {
+    padding: 4px 12px;
+  }
+  .menu-card {
+    width: min(620px, 74vw);
+    max-height: 96vh;
+    padding: 6px 10px;
+    gap: 4px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .result-card {
+    width: min(560px, 70vw);
+    max-height: 96vh;
+    padding: 8px 14px;
+    gap: 5px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+  .result-banner {
+    font-size: 26px;
+  }
+  .stars-row {
+    font-size: 24px;
+    min-height: 28px;
+    gap: 6px;
+  }
+  .podium-standings {
+    gap: 6px;
+    padding: 4px 4px;
+  }
+  .podium-slot {
+    padding: 4px 4px;
+    border-width: 3px;
+    gap: 2px;
+  }
+  .podium-slot.rank-1 { min-height: 108px; }
+  .podium-slot.rank-2 { min-height: 98px; }
+  .podium-slot.rank-3 { min-height: 90px; }
+  .podium-slot.rank-4, .podium-slot.rank-5 { min-height: 76px; }
+  .podium-avatar {
+    width: 32px;
+    height: 32px;
+    border-width: 2px;
+  }
+  .podium-medal {
+    font-size: 18px;
+  }
+  .podium-qual-badge {
+    font-size: 10px;
+  }
+  .result-actions {
+    gap: 14px;
+    margin-top: 2px;
+  }
+  .action-circle-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+    border-width: 3px;
+  }
+  .logo-banner {
+    font-size: 18px;
+    padding: 2px 10px;
+    gap: 6px;
+  }
+  .section-icon-header {
+    display: none;
+  }
+  .critter-grid, .stage-grid {
+    width: 48.5%;
+    gap: 4px;
+  }
+  .critter-avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .critter-badge-row {
+    font-size: 11px;
+  }
+  .critter-perk-pill {
+    font-size: 9px;
+    padding: 0 4px;
+  }
+  .critter-card {
+    padding: 2px;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+  .stage-card {
+    padding: 2px 2px 6px;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+  .stage-emoji {
+    font-size: 14px;
+  }
+  .stage-difficulty-pips {
+    font-size: 9px;
+  }
+  .stage-stars {
+    font-size: 10px;
+    min-height: 12px;
+  }
+  .vs-preview-row {
+    width: 68%;
+    padding: 2px 8px;
+  }
+  .vs-mini-avatar {
+    width: 22px;
+    height: 22px;
+  }
+  .vs-mini-avatar.player {
+    width: 25px;
+    height: 25px;
+  }
+  .giant-play-btn {
+    padding: 4px 20px;
+    font-size: 20px;
+    margin-top: 0;
+  }
+  /* Keep center fairway 100% clear on 844x390 while preserving >= 44px touch buttons */
+  #hud-layer {
+    padding: 6px 10px 8px;
+  }
+  #hud-top {
+    padding: 3px 10px;
+  }
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 19px;
+  }
+  .rank-pill {
+    width: 36px;
+    height: 36px;
+    font-size: 19px;
+  }
+  #race-track-bar {
+    height: 30px;
+  }
+  #aim-hint-pill {
+    position: fixed;
+    left: 12px;
+    bottom: 10px;
+    margin: 0;
+    padding: 3px 8px;
+    gap: 5px;
+  }
+  .aim-power-meter {
+    width: 60px;
+    height: 12px;
+  }
+  #hud-bottom {
+    justify-content: flex-end;
+    padding-right: 12px;
+    gap: 10px;
+  }
+  .power-pedal {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    border-width: 3px;
+  }
+  .pedal-emoji {
+    font-size: 24px;
+  }
+  .pedal-sub {
+    font-size: 12px;
+  }
+}
