@@ -1669,22 +1669,22 @@
     const rubberMult = racer.rubberMult || 1.0;
     const cdMult = racer.cdMult || 1.0;
 
-    // Stage 1 (stageDiff=0) AI base impulse starts at 14.5 and scales up to 20.6 on Stage 8; player auto-putt is 20.5
-    const aiBaseImpulse = (14.5 + 6.1 * stageDiff) * slotPace * rubberMult * racer.critter.speedBias;
+    // Competitive AI base impulse and putt cadence across all 8 stages
+    const aiBaseImpulse = (17.2 + 5.2 * stageDiff) * slotPace * rubberMult * racer.critter.speedBias;
     const baseImpulse = racer.isPlayer
-      ? (isManualOrPedal ? 26.5 : 20.5) * racer.critter.speedBias
+      ? (isManualOrPedal ? 25.5 : 19.5) * racer.critter.speedBias
       : aiBaseImpulse;
-    const feverMult = (racer.isPlayer && gameState.rainbowFeverTimer > 0) ? 1.38 : 1.0;
+    const feverMult = (racer.isPlayer && gameState.rainbowFeverTimer > 0) ? 1.32 : 1.0;
     const speed = baseImpulse * (0.55 + 0.55 * powerFrac) * feverMult;
 
     racer.vx += Math.sin(angle) * speed;
     racer.vz += -Math.cos(angle) * speed;
     racer.strokes++;
 
-    const aiBaseCD = (1.45 - 0.53 * stageDiff) / Math.max(0.75, slotPace);
+    const aiBaseCD = (1.18 - 0.38 * stageDiff) / Math.max(0.75, slotPace);
     racer.puttCooldown = racer.isPlayer
       ? (isManualOrPedal ? 0.65 : 1.18)
-      : (aiBaseCD * cdMult + Math.random() * 0.22);
+      : (aiBaseCD * cdMult + Math.random() * 0.18);
 
     if (racer.isPlayer) {
       if (isManualOrPedal && setPuttCooldown) {
@@ -2019,19 +2019,12 @@
         racer.vz -= 14 * subDt;
       }
 
-      const aiMaxV = (22 + 7 * stageDiff) * (racer.slotPace || 1.0);
-      const maxV = isPlayerFever ? 44 : (racer.rocketTimer > 0 ? 42 : (racer.isPlayer ? 35 : aiMaxV));
+      const aiMaxV = (23 + 7 * stageDiff) * (racer.slotPace || 1.0);
+      const maxV = isPlayerFever ? 42 : (racer.rocketTimer > 0 ? 40 : (racer.isPlayer ? 34 : aiMaxV));
       const speedMag = Math.hypot(racer.vx, racer.vz);
       if (speedMag > maxV) {
         racer.vx = (racer.vx / speedMag) * maxV;
         racer.vz = (racer.vz / speedMag) * maxV;
-      }
-
-      // Kid-friendly green hesitation on early stages so the player can overtake near the cup
-      if (!racer.isPlayer && player && !player.finished && racer.progress > 0.76 && racer.progress >= player.progress - 0.03) {
-        const greenBrake = gameState.stageIndex === 0 ? 0.12 : (gameState.stageIndex <= 2 ? 0.25 : 0.65);
-        racer.vx *= Math.pow(greenBrake, subDt);
-        racer.vz *= Math.pow(greenBrake, subDt);
       }
 
       pos.x += racer.vx * subDt;
@@ -2108,7 +2101,7 @@
             racer.lastHitSfxTime = gameState.elapsed;
             if (racer.isPlayer) {
               sfx.playBumper(1.0);
-              addTrauma(0.30);
+              addTrauma(0.14);
             } else if (player && Math.abs(pos.z - player.mesh.position.z) < 30) {
               sfx.playBumper(0.35);
             }
@@ -2140,7 +2133,7 @@
               racer.lastHitSfxTime = gameState.elapsed;
               if (racer.isPlayer) {
                 sfx.playBumper(1.0);
-                addTrauma(0.30);
+                addTrauma(0.14);
               } else if (player && Math.abs(pos.z - player.mesh.position.z) < 30) {
                 sfx.playBumper(0.35);
               }
@@ -2173,7 +2166,7 @@
             spawnBurstParticles(pos.x, pos.y, pos.z, 0x00f5d4, 10, nx, 0.5, nz);
             if (racer.isPlayer) {
               sfx.playBumper(1.0);
-              addTrauma(0.22);
+              addTrauma(0.10);
               addRainbowCharge(racer.critter.id === 'picky' ? 16 : 10);
             } else if (player && Math.abs(pos.z - player.mesh.position.z) < 30) {
               sfx.playBumper(0.35);
@@ -2196,7 +2189,6 @@
             if (racer.isPlayer) {
               sfx.playBoost();
               addRainbowCharge(12);
-              triggerFovKick(6.0);
               spawnBurstParticles(pos.x, pos.y, pos.z, 0x00f5d4, 10, -tx, 0.3, -tz);
             }
           }
@@ -2211,7 +2203,7 @@
 
       // Collectible Star Gems (widened magnet radius during Rainbow Fever or for KickinChicken)
       if (racer.isPlayer) {
-        const starRadius = isPlayerFever ? 5.2 : (racer.critter.id === 'kickin' ? 3.8 : 1.75);
+        const starRadius = isPlayerFever ? 4.2 : (racer.critter.id === 'kickin' ? 3.2 : 1.55);
         gameState.starsCoins.forEach((st) => {
           if (!st.collected && Math.hypot(pos.x - st.x, pos.z - st.z) < starRadius) {
             st.collected = true;
@@ -2225,20 +2217,22 @@
         });
       }
 
-      // Cup Capture Gravity Well Near the Hole (Player gets strong 8u magnet; AI scales with stage & hesitates on Stage 1-2 if player hasn't finished)
+      // Realistic Cup Capture Gravity Well Near the Hole (requires controlled speed or Vortex power to sink!)
       const dxHole = gameState.holePos.x - pos.x;
       const dzHole = gameState.holePos.z - pos.z;
       const distHole = Math.hypot(dxHole, dzHole);
+      const hasVortex = racer.vortexTimer > 0;
+      const captureRange = hasVortex ? 6.5 : 3.4;
 
-      if (distHole < 8.0) {
-        const pullStr = racer.isPlayer ? 36 : (16 + 14 * stageDiff);
+      if (distHole < captureRange) {
+        const pullStr = hasVortex ? 32 : (racer.isPlayer ? 13.5 : (14 + 10 * stageDiff));
         racer.vx += (dxHole / (distHole || 1)) * pullStr * subDt;
         racer.vz += (dzHole / (distHole || 1)) * pullStr * subDt;
       }
 
-      const sinkRadius = racer.isPlayer ? 1.92 : (1.45 + 0.32 * stageDiff);
-      const allowAiSink = racer.isPlayer || !player || player.finished || gameState.stageIndex >= 1 || gameState.elapsed > 24.0;
-      if (distHole < sinkRadius && racer.hopY < 1.2 && allowAiSink) {
+      const sinkRadius = hasVortex ? 1.75 : (racer.isPlayer ? 1.25 : (1.30 + 0.25 * stageDiff));
+      const canSinkAtSpeed = !racer.isPlayer || hasVortex || speedMag < 18.5;
+      if (distHole < sinkRadius && racer.hopY < 1.0 && canSinkAtSpeed) {
         sinkRacerIntoCup(racer);
       }
 
@@ -2556,28 +2550,24 @@
       }
 
       if (racer.isPlayer) {
-        if (speedMag < 5.2 && racer.puttCooldown <= 0) {
-          executePutt(racer, gameState.aimAngle, gameState.aimPower, false);
-        }
+        // Player controls their own putts via Putt pedal, Spacebar, or tap/drag release (no automatic self-playing putt loop!)
       } else {
-        // Kid-Friendly Rubber-Banding & Per-Slot Pacing
+        // Balanced AI Pacing & Rubber-Banding
         const playerProg = player ? player.progress : 0;
         const leadDelta = racer.progress - playerProg;
-        if (leadDelta > 0.03 || (racer.progress > 0.78 && leadDelta > -0.04)) {
-          // AI is ahead of player or near the green: ease off pace (especially on Stages 1-3)
-          const earlyEase = gameState.stageIndex === 0 ? 0.52 : (gameState.stageIndex <= 2 ? 0.68 : 0.84);
+        if (leadDelta > 0.14) {
+          const earlyEase = gameState.stageIndex === 0 ? 0.88 : (gameState.stageIndex <= 2 ? 0.92 : 0.96);
           racer.rubberMult = earlyEase;
-          racer.cdMult = gameState.stageIndex <= 2 ? 1.55 : 1.25;
-        } else if (leadDelta < -0.22) {
-          // AI fell far behind: gentle catch-up boost so the pack stays lively near camera view
-          racer.rubberMult = 1.18;
-          racer.cdMult = 0.82;
+          racer.cdMult = 1.08;
+        } else if (leadDelta < -0.15) {
+          racer.rubberMult = 1.22;
+          racer.cdMult = 0.80;
         } else {
           racer.rubberMult = 1.0;
           racer.cdMult = 1.0;
         }
 
-        const aiSpeedThreshold = 4.2 + 1.4 * stageDiff * (racer.slotPace || 1.0);
+        const aiSpeedThreshold = 4.8 + 1.6 * stageDiff * (racer.slotPace || 1.0);
         if (speedMag < aiSpeedThreshold && racer.puttCooldown <= 0) {
           const lookZ = Math.max(-stageCfg.length, pos.z - 15);
           let targetX = getCourseCenterX(lookZ, stageCfg)
@@ -2614,8 +2604,8 @@
           }
 
           const aiAngle = Math.atan2(targetX - pos.x, -(lookZ - pos.z));
-          const baseAiPower = (0.58 + 0.22 * stageDiff) + (racer.critter.aimSkill - 0.9) * 1.8 + Math.random() * 0.14;
-          executePutt(racer, aiAngle, Math.min(0.95, Math.max(0.45, baseAiPower)), false);
+          const baseAiPower = (0.70 + 0.22 * stageDiff) + (racer.critter.aimSkill - 0.9) * 1.8 + Math.random() * 0.14;
+          executePutt(racer, aiAngle, Math.min(0.98, Math.max(0.55, baseAiPower)), false);
 
           // Lively AI Critter Personality Mini-Hop & Colored Spark Burst when racing near player
           if (player && Math.abs(pos.z - player.mesh.position.z) < 12.0 && racer.hopY <= 0.05 && Math.random() < 0.42) {
@@ -2659,16 +2649,12 @@
       camBase.z += (targetCamZ - camBase.z) * Math.min(1, dt * 6);
 
       const shake = gameState.trauma * gameState.trauma;
-      const ox = 0.32 * shake * Math.sin(gameState.elapsed * 43.0);
-      const oy = 0.32 * shake * Math.cos(gameState.elapsed * 51.0);
-      const oz = 0.25 * shake * Math.sin(gameState.elapsed * 37.0 + 1.2);
-      const roll = 0.025 * shake * Math.sin(gameState.elapsed * 47.0);
+      const ox = 0.08 * shake * Math.sin(gameState.elapsed * 26.0);
+      const oy = 0.08 * shake * Math.cos(gameState.elapsed * 31.0);
+      const oz = 0.05 * shake * Math.sin(gameState.elapsed * 23.0 + 1.2);
 
       camera.position.set(camBase.x + ox, camBase.y + oy, camBase.z + oz);
       camera.lookAt(player.mesh.position.x * 0.5, groundY + 1.75, player.mesh.position.z - 6.5);
-      if (shake > 0.0001) {
-        camera.rotateZ(roll);
-      }
 
       if (dirLight) {
         dirLight.position.set(player.mesh.position.x + 18, 42, player.mesh.position.z + 24);
